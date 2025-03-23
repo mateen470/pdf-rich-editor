@@ -1,9 +1,19 @@
+import { Routes, Route } from "react-router-dom"
+
+import LogIn from "./pages/LogIn"
+import Register from "./pages/Register"
+import ForgotPassword from "./pages/ForgotPassword"
+import ResetPassword from "./pages/ResetPassword"
+
 function App() {
 
   return (
-    <div className="m-0 p-0 bg-black h-[100vh] text-white">
-      hi!
-    </div>
+    <Routes>
+      <Route path="/" element={<LogIn />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+    </Routes>
   )
 }
 
