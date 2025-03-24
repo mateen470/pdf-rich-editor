@@ -1,10 +1,10 @@
-import ForgotPasswordForm from "../components/ForgotPasswordForm"
+import  LoginForm from "../../components/auth-components/LoginForm"
 
-export default function ForgotPassword() {
+export default function LogIn() {
     return (
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
             <div className="w-full max-w-sm">
-                <ForgotPasswordForm />
+                <LoginForm />
             </div>
         </div>
     )
