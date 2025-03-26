@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar"
 
 import { AppSidebar } from "../../components/editor-components/AppSidebar"
+import { HistoryTable } from "@/components/editor-components/HistoryTable"
 
 export default function Dashboard() {
     return (
@@ -41,7 +42,9 @@ export default function Dashboard() {
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                     <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                        <div className="aspect-video rounded-xl bg-muted/50" />
+                        <div className="aspect-video rounded-xl bg-muted/50 p-10" >
+                            <HistoryTable />
+                        </div>
                         <div className="aspect-video rounded-xl bg-muted/50" />
                         <div className="aspect-video rounded-xl bg-muted/50" />
                     </div>
