@@ -15,6 +15,7 @@ import {
 
 import { AppSidebar } from "../../components/editor-components/AppSidebar"
 import { HistoryTable } from "@/components/editor-components/HistoryTable"
+import { Button } from "@/components/ui/button"
 
 export default function Dashboard() {
     return (
@@ -58,6 +59,7 @@ export default function Dashboard() {
                         </div>
                         <div className=" rounded-xl bg-muted/50 p-10 flex-1">
                         <HistoryTable />
+                        <Button>hi!!</Button>
                         </div>
                     </div>
                 </div>
