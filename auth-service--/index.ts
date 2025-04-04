@@ -8,7 +8,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 4001;
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("PDFaddy API-GATEWAY");
+  res.send("PDFaddy AUTH-SERVICE");
 });
 
 app.listen(PORT, () => {
