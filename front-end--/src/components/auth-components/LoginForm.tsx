@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import axios from "axios"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -10,24 +11,39 @@ import { useFormik } from "formik"
 import { loginSchema, LoginFormData } from "@/schemas/loginFormSchema"
 import Message from "@/utilities/Message"
 
+interface ApiCallError extends Error {
+    response?: {
+        data?: {
+            message?: string;
+        };
+    };
+}
+
 export default function LoginForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
 
     const [error, setError] = useState<string | null>(null)
+    const navigate = useNavigate()
 
     const formpik = useFormik<LoginFormData>({
         initialValues: {
             email: "",
             password: ""
         },
-        onSubmit: (values) => {
-            const result = loginSchema.safeParse(values)
-
+        onSubmit: async (values) => {
+            const result = loginSchema.safeParse(values);
             if (!result.success) {
-                setError(result.error.errors[0].message)
-                return
+                setError(result.error.errors[0].message);
+                return;
+            }
+            try {
+                await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, values,);
+                navigate("/dashboard");
+            } catch (err: unknown) {
+                const requestError = err as ApiCallError
+                setError(requestError.response?.data?.message || "Something went wrong");
             }
         }
     })
@@ -72,11 +88,9 @@ export default function LoginForm({
                             </div>
                             <Input id="password" type="password" name="password" value={formpik.values.password} onChange={formpik.handleChange} required />
                         </div>
-                        <Link to="/dashboard">
-                            <Button type="submit" className="w-full cursor-pointer">
-                                Login
-                            </Button>
-                        </Link>
+                        <Button type="submit" className="w-full cursor-pointer">
+                            Login
+                        </Button>
                     </div>
                     <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                         <span className="relative z-10 bg-background px-2 text-muted-foreground">
