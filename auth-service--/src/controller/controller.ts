@@ -10,3 +10,14 @@ export const handleLoginRequest = async (
     console.error("Login error:", error);
   }
 };
+
+export const handleRegisterRequest = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    console.log(req.body);
+  } catch (error) {
+    console.error("error");
+  }
+};
