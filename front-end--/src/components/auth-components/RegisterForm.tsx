@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import axios from "axios"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -10,12 +11,21 @@ import { useFormik } from "formik"
 import { registerSchema, RegisterFormData } from "@/schemas/registerFormSchema"
 import Message from "@/utilities/Message"
 
+interface ApiCallError extends Error {
+    response?: {
+        data?: {
+            message?: string;
+        };
+    };
+}
+
 export default function RegisterForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
 
     const [error, setError] = useState<string | null>(null)
+    const navigate = useNavigate()
 
     const formpik = useFormik<RegisterFormData>({
         initialValues: {
@@ -24,12 +34,19 @@ export default function RegisterForm({
             password: "",
             repeatPassword: ""
         },
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             const result = registerSchema.safeParse(values)
 
             if (!result.success) {
                 setError(result.error.errors[0].message)
                 return
+            }
+            try {
+                await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, values)
+                navigate("/login")
+            } catch (err: unknown) {
+                const requestError = err as ApiCallError
+                setError(requestError.response?.data?.message || "Something went wrong");
             }
         }
     })
