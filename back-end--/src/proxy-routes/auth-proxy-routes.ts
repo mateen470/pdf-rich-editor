@@ -21,5 +21,13 @@ router.use(
     },
   })
 );
+router.use(
+  "/forget-password",
+  proxy(`${process.env.SSO_AUTH_SERVICE_URL}`, {
+    proxyReqPathResolver: (req: Request) => {
+      return "/forget-password";
+    },
+  })
+);
 
 export default router;
