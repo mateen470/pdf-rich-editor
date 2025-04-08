@@ -21,3 +21,13 @@ export const handleRegisterRequest = async (
     console.error("error");
   }
 };
+export const handleForgetPasswordRequest = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    console.log(req.body);
+  } catch (error) {
+    console.error("error");
+  }
+};
