@@ -39,7 +39,7 @@ export default function LoginForm({
                 return;
             }
             try {
-                await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, values,);
+                await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, values);
                 navigate("/dashboard");
             } catch (err: unknown) {
                 const requestError = err as ApiCallError

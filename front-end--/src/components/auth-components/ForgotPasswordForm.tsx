@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
+import axios from "axios"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -10,34 +11,46 @@ import { useFormik } from "formik"
 import { forgotPasswordSchema, ForgotPasswrdFormData } from "@/schemas/forgetPasswordFormSchema"
 import Message from "@/utilities/Message"
 
+interface ApiCallError extends Error {
+    response?: {
+        data?: {
+            message?: string;
+        };
+    };
+}
+
 export default function ForgotPasswordForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
 
     const [status, setStatus] = useState<string | null>(null)
-    const [isError, setIsError] = useState<boolean | false>(false)
+    const [error, setError] = useState<boolean | false>(false)
 
     const formpik = useFormik<ForgotPasswrdFormData>({
         initialValues: {
             email: ""
         },
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             const result = forgotPasswordSchema.safeParse(values)
 
             if (!result.success) {
-                setIsError(true)
+                setError(true)
                 setStatus(result.error.errors[0].message)
                 return
             }
-            else {
-                setIsError(false)
+            try {
+                await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/forget-password`, values);
+                setError(false)
                 setStatus("Please check your Email")
-                return
+            } catch (err: unknown) {
+                const requestError = err as ApiCallError
+                setStatus(requestError.response?.data?.message || "Something went wrong");
             }
+            return
         }
-    })
 
+    })
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <form onSubmit={formpik.handleSubmit}>
@@ -52,7 +65,7 @@ export default function ForgotPasswordForm({
                         </div>
                     </div>
 
-                    <Message status={isError ? "error" : "success"} message={status} />
+                    <Message status={error ? "error" : "success"} message={status} />
 
                     <div className="flex flex-col gap-6">
                         <div className="grid gap-2">
