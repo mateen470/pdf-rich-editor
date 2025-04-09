@@ -42,7 +42,7 @@ export default function ForgotPasswordForm({
             try {
                 await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/forget-password`, values);
                 setError(false)
-                setStatus("Please check your Email")
+                setStatus("Please check your Email!")
             } catch (err: unknown) {
                 const requestError = err as ApiCallError
                 setStatus(requestError.response?.data?.message || "Something went wrong");
