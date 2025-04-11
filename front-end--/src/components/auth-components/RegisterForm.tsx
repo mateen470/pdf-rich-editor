@@ -46,7 +46,7 @@ export default function RegisterForm({
                 navigate("/login")
             } catch (err: unknown) {
                 const requestError = err as ApiCallError
-                setError(requestError.response?.data?.message || "Something went wrong");
+                setError(requestError.response?.data?.message || "Something went wrong!");
             }
         }
     })
