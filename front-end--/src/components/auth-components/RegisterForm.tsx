@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import axios from "axios"
 
 import { cn } from "@/lib/utils"
@@ -18,14 +18,18 @@ interface ApiCallError extends Error {
         };
     };
 }
+interface RegisterResponse {
+    message?: string;
+};
+
 
 export default function RegisterForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
 
-    const [error, setError] = useState<string | null>(null)
-    const navigate = useNavigate()
+    const [message, setMessage] = useState<string | null>(null)
+    const [status, setStatus] = useState<"success" | "error" | "">("")
 
     const formpik = useFormik<RegisterFormData>({
         initialValues: {
@@ -38,15 +42,19 @@ export default function RegisterForm({
             const result = registerSchema.safeParse(values)
 
             if (!result.success) {
-                setError(result.error.errors[0].message)
+                setStatus("error")
+                setMessage(result.error.errors[0].message)
                 return
             }
             try {
-                await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, values)
-                navigate("/login")
+                const registerRequest = await axios.post<RegisterResponse>(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, values)
+                setStatus("success")
+                setMessage(registerRequest.data?.message || "Please check your email");
+
             } catch (err: unknown) {
                 const requestError = err as ApiCallError
-                setError(requestError.response?.data?.message || "Something went wrong!");
+                setStatus("error")
+                setMessage(requestError.response?.data?.message || "Something went wrong");
             }
         }
     })
@@ -65,7 +73,7 @@ export default function RegisterForm({
                         </div>
                     </div>
 
-                    <Message status={"error"} message={error} />
+                    <Message status={status} message={message} />
 
                     <div className="flex flex-col gap-6">
                         <div className="grid gap-2">
