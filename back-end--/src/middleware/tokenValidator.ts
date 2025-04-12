@@ -1,6 +1,5 @@
 //THIS MIDDLEWARE CHECKS FOR THE TOKEN IN THE REQUEST'S HEADER
 //AND VERIFIES THE TOKEN
-
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
