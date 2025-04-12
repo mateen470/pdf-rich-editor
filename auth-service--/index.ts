@@ -4,6 +4,8 @@ dotenv.config();
 import express from "express";
 import authRouter from "./src/routes/routes";
 
+import "./src/db/connection";
+
 const app = express();
 app.use(express.json());
 
