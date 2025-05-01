@@ -32,7 +32,7 @@ export default function ResetPasswordForm({
             }
             else {
                 setIsError(false)
-                setStatus("Your Password has been updated")
+                setStatus("Your Password has been updated!")
                 return
             }
         }
