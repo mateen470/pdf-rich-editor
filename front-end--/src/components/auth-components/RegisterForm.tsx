@@ -49,7 +49,7 @@ export default function RegisterForm({
             try {
                 const registerRequest = await axios.post<RegisterResponse>(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, values)
                 setStatus("success")
-                setMessage(registerRequest.data?.message || "Please check your email");
+                setMessage(registerRequest.data?.message || "Please check your email!");
 
             } catch (err: unknown) {
                 const requestError = err as ApiCallError
