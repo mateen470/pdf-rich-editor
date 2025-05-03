@@ -45,6 +45,6 @@ export const handleForgetPasswordRequest = async (
   try {
     console.log(req.body);
   } catch (error) {
-    console.error("error");
+    console.error("error!");
   }
 };
