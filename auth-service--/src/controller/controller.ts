@@ -45,6 +45,16 @@ export const handleForgetPasswordRequest = async (
   try {
     console.log(req.body);
   } catch (error) {
-    console.error("error!");
+    console.error("error");
+  }
+};
+export const handleResetPasswordRequest = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    console.log(req.body);
+  } catch (error) {
+    console.error("error");
   }
 };
