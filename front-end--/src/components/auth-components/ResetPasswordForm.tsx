@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { useFormik } from "formik"
 import { resetPasswordSchema, ResetPasswordFormData } from "@/schemas/resetPasswordSchema"
 import Message from "@/utilities/Message"
+import axios from "axios"
 
 export default function ResetPasswordForm({
     className,
@@ -34,6 +35,16 @@ export default function ResetPasswordForm({
                 setIsError(false)
                 setStatus("Your Password has been updated")
                 return
+            }
+            try {
+                const registerRequest = await axios.post<RegisterResponse>(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, values)
+                setStatus("success")
+                setMessage(registerRequest.data?.message || "Please check your email!");
+
+            } catch (err: unknown) {
+                const requestError = err as ApiCallError
+                setStatus("error")
+                setMessage(requestError.response?.data?.message || "Something went wrong");
             }
         }
     })
