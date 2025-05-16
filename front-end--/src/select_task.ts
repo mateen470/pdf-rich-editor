@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", function () {
     static create(value) {
       let node = super.create(value);
       node.setAttribute("src", value);
-      node.style.width = "150px";
-      node.style.height = "150px";
+      node.style.width = "250px";
+      node.style.height = "250px";
       return node;
     }
   }
