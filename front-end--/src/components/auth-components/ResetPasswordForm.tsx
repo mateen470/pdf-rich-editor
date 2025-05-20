@@ -23,7 +23,7 @@ export default function ResetPasswordForm({
             password: "",
             repeatPassword: ""
         },
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             const result = resetPasswordSchema.safeParse(values)
 
             if (!result.success) {
@@ -32,19 +32,15 @@ export default function ResetPasswordForm({
                 return
             }
             else {
-                setIsError(false)
-                setStatus("Your Password has been updated")
-                return
-            }
-            try {
-                const registerRequest = await axios.post<RegisterResponse>(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, values)
-                setStatus("success")
-                setMessage(registerRequest.data?.message || "Please check your email!");
-
-            } catch (err: unknown) {
-                const requestError = err as ApiCallError
-                setStatus("error")
-                setMessage(requestError.response?.data?.message || "Something went wrong");
+                try {
+                    const registerRequest = await axios.post<RegisterResponse>(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, values)
+                    setIsError(false)
+                    setStatus("Your Password has been updated")
+                } catch (err: unknown) {
+                    const requestError = err as ApiCallError
+                    setIsError(true)
+                    setStatus(requestError.response?.data?.message || "Something went wrong");
+                }
             }
         }
     })
