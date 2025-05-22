@@ -9,6 +9,16 @@ import { useFormik } from "formik"
 import { resetPasswordSchema, ResetPasswordFormData } from "@/schemas/resetPasswordSchema"
 import Message from "@/utilities/Message"
 import axios from "axios"
+interface ApiCallError extends Error {
+    response?: {
+        data?: {
+            message?: string;
+        };
+    };
+}
+interface ResetResponse {
+    message?: string;
+};
 
 export default function ResetPasswordForm({
     className,
@@ -33,9 +43,9 @@ export default function ResetPasswordForm({
             }
             else {
                 try {
-                    const registerRequest = await axios.post<RegisterResponse>(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, values)
+                    const resetRequest = await axios.post<ResetResponse>(`${import.meta.env.VITE_BACKEND_URL}/auth/reset-password`, values)
                     setIsError(false)
-                    setStatus("Your Password has been updated")
+                    setStatus(resetRequest.data?.message || "Your Password has been updated")
                 } catch (err: unknown) {
                     const requestError = err as ApiCallError
                     setIsError(true)
