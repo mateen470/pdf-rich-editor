@@ -59,7 +59,6 @@ export default function Dashboard() {
                         </div>
                         <div className=" rounded-xl bg-muted/50 p-10 flex-1">
                         <HistoryTable />
-                        <Button>hi!!</Button>
                         </div>
                     </div>
                 </div>
