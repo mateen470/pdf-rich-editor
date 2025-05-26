@@ -49,14 +49,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className="flex gap-4 h-[20%]">
-                        <div className="rounded-xl bg-muted/50 p-10 flex-1" >
-                        </div>
-                        <div className=" rounded-xl bg-muted/50 p-10 flex-1">
-                        </div>
-                    </div>
-                    <div className="flex gap-4 h-[20%]">
-                            <div className=" rounded-xl bg-muted/50 p-10 flex-1">
-                        </div>
+
                         <div className=" rounded-xl bg-muted/50 p-10 flex-1">
                         <HistoryTable />
                         </div>
