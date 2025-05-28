@@ -15,7 +15,6 @@ import {
 
 import { AppSidebar } from "../../components/editor-components/AppSidebar"
 import { HistoryTable } from "@/components/editor-components/HistoryTable"
-import { Button } from "@/components/ui/button"
 
 export default function Dashboard() {
     return (
@@ -45,6 +44,9 @@ export default function Dashboard() {
              
                     <div className="flex gap-4 h-[20%]">
 
+                        <div className=" rounded-xl bg-muted/50 p-10 flex-1">
+                        <HistoryTable />
+                        </div>
                         <div className=" rounded-xl bg-muted/50 p-10 flex-1">
                         <HistoryTable />
                         </div>
