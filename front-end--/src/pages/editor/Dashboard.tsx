@@ -24,10 +24,6 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-4 p-4 h-[calc(100vh-64px)]">
 
                     <div className="flex gap-4 h-[20%]">
-
-                        <div className=" rounded-xl bg-muted/50 p-10 flex-1">
-                            <HistoryTable />
-                        </div>
                         <div className=" rounded-xl bg-muted/50 p-10 flex-1">
                             <HistoryTable />
                         </div>
