@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useState } from "react"
 
 const invoices = [
   {
@@ -56,6 +57,9 @@ const invoices = [
 ]
 
 export function HistoryTable() {
+
+  const [isLoggedIn, setIsLoggedIn] = useState(true)
+
   return (
     <ScrollArea className="h-full">
       <Table>
