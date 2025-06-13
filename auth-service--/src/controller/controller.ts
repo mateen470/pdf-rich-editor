@@ -2,31 +2,32 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import pool from "../db/sql_pool";
-import { registerSchema } from "../utilities/regitserSchema";
+import { registerSchema, loginSchema, forgetPasswordSchema, resetPasswordSchema } from "../utilities/authSchemas";
 
 export const handleLoginRequest = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const { email, password } = req.body;
+    const loginData = loginSchema.safeParse(req.body);
 
-    if (!email || !password) {
-      res.status(401).json({ message: "Email and password are required" });
+    if (!loginData.success) {
+      res.status(400).json({ message: loginData.error.errors[0].message });
       return;
     }
 
-    // Check if user exists
-    const userQuery = `SELECT id, name, email, password FROM users WHERE email = ?`;
-    const [rows] = await pool.execute(userQuery, [email]);
-    const users = rows as any[];
+    const { email, password } = loginData.data;
 
-    if (users.length === 0) {
+    // Check if user exists
+    const userQuery = `SELECT id, name, email, password FROM users WHERE email = $1`;
+    const result = await pool.query(userQuery, [email]);
+
+    if (result.rows.length === 0) {
       res.status(401).json({ message: "Invalid credentials" });
       return;
     }
 
-    const user = users[0];
+    const user = result.rows[0];
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -64,11 +65,10 @@ export const handleRegisterRequest = async (
     const { name, email, password } = registerData.data;
 
     // Check if user already exists
-    const existingUserQuery = `SELECT id FROM users WHERE email = ?`;
-    const [existingRows] = await pool.execute(existingUserQuery, [email]);
-    const existingUsers = existingRows as any[];
+    const existingUserQuery = `SELECT id FROM users WHERE email = $1`;
+    const existingResult = await pool.query(existingUserQuery, [email]);
 
-    if (existingUsers.length > 0) {
+    if (existingResult.rows.length > 0) {
       res.status(409).json({ message: "User already exists with this email" });
       return;
     }
@@ -84,10 +84,11 @@ export const handleRegisterRequest = async (
     // Insert new user
     const insertUserQuery = `
       INSERT INTO users (name, email, password, email_verification_token, email_verification_expires, is_email_verified) 
-      VALUES (?, ?, ?, ?, ?, ?)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id, name, email
     `;
     
-    await pool.execute(insertUserQuery, [
+    const newUserResult = await pool.query(insertUserQuery, [
       name,
       email,
       hashedPassword,
@@ -116,19 +117,20 @@ export const handleForgetPasswordRequest = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { email } = req.body;
+    const forgetPasswordData = forgetPasswordSchema.safeParse(req.body);
 
-    if (!email) {
-      res.status(400).json({ message: "Email is required" });
+    if (!forgetPasswordData.success) {
+      res.status(400).json({ message: forgetPasswordData.error.errors[0].message });
       return;
     }
 
-    // Check if user exists
-    const userQuery = `SELECT id, email FROM users WHERE email = ?`;
-    const [rows] = await pool.execute(userQuery, [email]);
-    const users = rows as any[];
+    const { email } = forgetPasswordData.data;
 
-    if (users.length === 0) {
+    // Check if user exists
+    const userQuery = `SELECT id, email FROM users WHERE email = $1`;
+    const result = await pool.query(userQuery, [email]);
+
+    if (result.rows.length === 0) {
       // Don't reveal if email exists or not for security
       res.status(200).json({ 
         message: "If an account with this email exists, you will receive a password reset link" 
@@ -143,11 +145,11 @@ export const handleForgetPasswordRequest = async (
     // Save reset token to database
     const updateResetTokenQuery = `
       UPDATE users 
-      SET password_reset_token = ?, password_reset_expires = ? 
-      WHERE email = ?
+      SET password_reset_token = $1, password_reset_expires = $2 
+      WHERE email = $3
     `;
     
-    await pool.execute(updateResetTokenQuery, [
+    await pool.query(updateResetTokenQuery, [
       resetToken,
       resetTokenExpires,
       email
@@ -171,27 +173,28 @@ export const handleResetPasswordRequest = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { token, newPassword } = req.body;
+    const resetPasswordData = resetPasswordSchema.safeParse(req.body);
 
-    if (!token || !newPassword) {
-      res.status(400).json({ message: "Token and new password are required" });
+    if (!resetPasswordData.success) {
+      res.status(400).json({ message: resetPasswordData.error.errors[0].message });
       return;
     }
+
+    const { token, newPassword } = resetPasswordData.data;
 
     // Find user with valid reset token
     const userQuery = `
       SELECT id, email FROM users 
-      WHERE password_reset_token = ? AND password_reset_expires > NOW()
+      WHERE password_reset_token = $1 AND password_reset_expires > NOW()
     `;
-    const [rows] = await pool.execute(userQuery, [token]);
-    const users = rows as any[];
+    const result = await pool.query(userQuery, [token]);
 
-    if (users.length === 0) {
+    if (result.rows.length === 0) {
       res.status(400).json({ message: "Invalid or expired reset token" });
       return;
     }
 
-    const user = users[0];
+    const user = result.rows[0];
 
     // Hash new password
     const saltRounds = 12;
@@ -200,11 +203,11 @@ export const handleResetPasswordRequest = async (
     // Update password and clear reset token
     const updatePasswordQuery = `
       UPDATE users 
-      SET password = ?, password_reset_token = NULL, password_reset_expires = NULL 
-      WHERE id = ?
+      SET password = $1, password_reset_token = NULL, password_reset_expires = NULL 
+      WHERE id = $2
     `;
     
-    await pool.execute(updatePasswordQuery, [hashedPassword, user.id]);
+    await pool.query(updatePasswordQuery, [hashedPassword, user.id]);
 
     res.status(200).json({ message: "Password reset successful" });
 
