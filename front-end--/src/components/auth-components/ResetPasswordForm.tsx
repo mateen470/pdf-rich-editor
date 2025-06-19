@@ -9,6 +9,7 @@ import { useFormik } from "formik"
 import { resetPasswordSchema, ResetPasswordFormData } from "@/schemas/resetPasswordSchema"
 import Message from "@/utilities/Message"
 import axios from "axios"
+import { useParams } from "react-router-dom"
 interface ApiCallError extends Error {
     response?: {
         data?: {
@@ -25,6 +26,7 @@ export default function ResetPasswordForm({
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
 
+    const { id } = useParams<{ id: string }>();
     const [status, setStatus] = useState<string | null>(null)
     const [isError, setIsError] = useState<boolean | false>(false)
 
@@ -43,7 +45,7 @@ export default function ResetPasswordForm({
             }
             else {
                 try {
-                    const resetRequest = await axios.post<ResetResponse>(`${import.meta.env.VITE_BACKEND_URL}/auth/reset-password`, values)
+                    const resetRequest = await axios.post<ResetResponse>(`${import.meta.env.VITE_BACKEND_URL}/auth/reset-password/${id}`, values)
                     setIsError(false)
                     setStatus(resetRequest.data?.message || "Your Password has been updated")
                 } catch (err: unknown) {
