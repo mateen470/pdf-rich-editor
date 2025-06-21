@@ -30,10 +30,10 @@ router.use(
   })
 );
 router.use(
-  "/reset-password",
+  "/reset-password/:id",
   proxy(`${process.env.SSO_AUTH_SERVICE_URL}`, {
     proxyReqPathResolver: (req: Request) => {
-      return "/reset-password";
+      return "/reset-password/:id";
     },
   })
 );
